@@ -1,2 +1,2 @@
-# pnnl-dopf-lindistflow
-OEDISI Distribution Optimal Power Flow Federate (DOPF)
+# pnnl-dsse-ekf
+Distribution system state estimation (DSSE) using the Extended Kalman Filter (EKF) algorithm.
