@@ -8,3 +8,9 @@ class Config:
 
 def run_step(value: float, config: Config) -> float:
     return value * config.example_param
+
+
+if __name__ == "__main__":
+    cfg = Config()
+    result = run_step(1.0, cfg)
+    print(f"Final result: {result}")
