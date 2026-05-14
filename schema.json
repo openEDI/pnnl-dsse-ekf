@@ -1,0 +1,23 @@
+{
+  "properties": {
+    "sigma_v": {
+      "title": "Sigma V",
+      "type": "number"
+    },
+    "sigma_p": {
+      "title": "Sigma P",
+      "type": "number"
+    },
+    "sigma_q": {
+      "title": "Sigma Q",
+      "type": "number"
+    }
+  },
+  "required": [
+    "sigma_v",
+    "sigma_p",
+    "sigma_q"
+  ],
+  "title": "ComponentParameters",
+  "type": "object"
+}

@@ -9,7 +9,7 @@ description = "ekf"
 authors = [{ name = "openEDI", email = "info@example.com" }]
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = ["pydantic"]
 
 [project.optional-dependencies]
 dev = ["pytest"]
