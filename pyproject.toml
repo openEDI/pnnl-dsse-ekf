@@ -1,6 +1,7 @@
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["setuptools", "wheel", "helics>=3.4.0"]
+build-backend = "build_backend"
+backend-path = ["."]
 
 [project]
 name = "ekf"
@@ -8,11 +9,30 @@ version = "0.1.0"
 description = "ekf"
 authors = [{ name = "openEDI", email = "info@example.com" }]
 readme = "README.md"
-requires-python = ">=3.13"
-dependencies = ["pydantic"]
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic",
+    "helics>=3.4.0",
+    "fastapi",
+    "uvicorn",
+    "oedisi~=3.0",
+]
 
 [project.optional-dependencies]
 dev = ["pytest"]
 
+[project.scripts]
+ekf-federate-server = "ekf_federate.server:main"
+ekf-state-estimator = "ekf_federate.server:run_sim_cli"
+
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+ekf_federate = ["bin/state-estimator-gadal"]
+
+[dependency-groups]
+dev = [
+    "cmake>=4.4.0",
+    "ninja>=1.13.0",
+]

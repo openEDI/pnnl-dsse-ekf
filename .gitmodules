@@ -1,0 +1,4 @@
+[submodule "external/gridappsd-state-estimator"]
+	path = external/gridappsd-state-estimator
+	url = https://github.com/GRIDAPPSD/gridappsd-state-estimator.git
+	branch = OEDISI.1.1.2_ekf_fixes
