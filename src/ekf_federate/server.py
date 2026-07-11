@@ -7,7 +7,6 @@ import json
 import os
 
 from fastapi import FastAPI, BackgroundTasks, HTTPException
-from ekf import run_simulator
 from fastapi.responses import JSONResponse
 import uvicorn
 
@@ -51,6 +50,34 @@ async def read_root():
         host_ip=host_ip
     ).dict()
     return JSONResponse(response, 200)
+def run_simulator(broker_config: BrokerConfig) -> None:
+    import subprocess
+    import helics
+    
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    binary_path = os.path.join(current_dir, "bin", "state-estimator-gadal")
+    if not os.path.exists(binary_path):
+        sibling_path = os.path.join(current_dir, "..", "..", "bin", "state-estimator-gadal")
+        if os.path.exists(sibling_path):
+            binary_path = sibling_path
+        else:
+            binary_path = "./bin/state-estimator-gadal"
+            
+    logging.info(f"Starting simulator binary from: {binary_path}")
+    env = os.environ.copy()
+    env["HELICS_BROKER"] = f"{broker_config.broker_ip}:{broker_config.broker_port}"
+    
+    # Configure dynamic linker search paths to locate libhelics and libzmq
+    helics_lib = os.path.join(os.path.dirname(helics.__file__), "install", "lib")
+    helics_lib64 = os.path.join(os.path.dirname(helics.__file__), "install", "lib64")
+    env["LD_LIBRARY_PATH"] = f"{helics_lib}:{helics_lib64}:" + env.get("LD_LIBRARY_PATH", "")
+    
+    try:
+        subprocess.run([binary_path], env=env, check=True)
+        logging.info("Simulator binary completed successfully.")
+    except Exception as e:
+        logging.exception("Error running simulator binary:")
+        raise
 
 
 @app.post("/run")
@@ -96,5 +123,38 @@ async def configure(component_struct: ComponentStruct):
     ).dict()
     return JSONResponse(response, 200)
 
+def run_sim_cli():
+    import helics
+    import subprocess
+    import sys
+    
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    binary_path = os.path.join(current_dir, "bin", "state-estimator-gadal")
+    if not os.path.exists(binary_path):
+        sibling_path = os.path.join(current_dir, "..", "..", "bin", "state-estimator-gadal")
+        if os.path.exists(sibling_path):
+            binary_path = sibling_path
+        else:
+            binary_path = "./bin/state-estimator-gadal"
+            
+    logging.basicConfig(level=logging.INFO)
+    logging.info(f"Starting simulator binary from: {binary_path}")
+    env = os.environ.copy()
+    
+    # Configure dynamic linker search paths to locate libhelics and libzmq
+    helics_lib = os.path.join(os.path.dirname(helics.__file__), "install", "lib")
+    helics_lib64 = os.path.join(os.path.dirname(helics.__file__), "install", "lib64")
+    env["LD_LIBRARY_PATH"] = f"{helics_lib}:{helics_lib64}:" + env.get("LD_LIBRARY_PATH", "")
+    
+    try:
+        subprocess.run([binary_path], env=env, check=True)
+        logging.info("Simulator binary completed successfully.")
+    except Exception as e:
+        logging.exception("Error running simulator binary:")
+        sys.exit(1)
+
+def main():
+    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get('PORT', '5903')))
+
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=int(os.environ['PORT']))
+    main()
