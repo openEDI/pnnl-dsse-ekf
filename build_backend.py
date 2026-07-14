@@ -64,6 +64,7 @@ def build_cpp():
     ss_libs = "-lklu -lamd -lbtf -lcolamd -lcxsparse -lsuitesparseconfig -lstdc++"
     gadal_libs = f"{ss_lib_paths} {ss_libs} -L{helics_install_path}/lib -L{helics_install_path}/lib64 -Wl,-rpath,{helics_install_path}/lib -Wl,-rpath,{helics_install_path}/lib64 -lhelics"
     
+    extra_cxxflags = os.environ.get("STATE_ESTIMATOR_DEFINES", "")
     subprocess.run(
         [
             "make",
@@ -71,7 +72,8 @@ def build_cpp():
             "state-estimator",
             "gadal",
             f"HELICS={helics_install_path}",
-            f"GADAL_LIBS={gadal_libs}"
+            f"GADAL_LIBS={gadal_libs}",
+            f"EXTRA_CXXFLAGS={extra_cxxflags}"
         ],
         cwd=ext_dir,
         env=env,
